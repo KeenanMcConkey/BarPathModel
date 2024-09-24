@@ -4,10 +4,10 @@ def predict_exercise_times(predictions, window_length, window_stride, sample_rat
     window_counter = 0
     
     for i in range(len(predictions) - 1):
-        if predictions[1] == 1:
+        if predictions[i] == 1:
             window_counter += 1
 
-        if predictions[1] == 0:
+        if predictions[i] == 0:
             window_counter = 0
         
         if exercise_start == None and predictions[i] == 0 and predictions[i + 1] == 1:

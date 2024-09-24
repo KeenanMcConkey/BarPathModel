@@ -16,15 +16,16 @@ Average end error: 1.239
 Window length: 200
 Window stride: 50
 
-2024-09-24 00:36:01.060787
-Average start error: 0.590
-Average end error: 1.239
-Window length: 200
-Window stride: 50
-
 2024-09-24 00:53:52.858737
 Average start error: 3.098
 Average end error: 5.582
 Window length: 200
 Window stride: 50
+
+2024-09-24 01:16:04.345088
+Average start error: 0.464
+Average end error: 0.735
+Window length: 100
+Window stride: 50
+Min consecutive windows: 3
 

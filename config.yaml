@@ -1,9 +1,9 @@
 CutoffFreq: 0.1
 SampleRate: 100
 
-WindowLength: 100
-WindowStride: 50
-MinConsqWindows: 5 # Minimum number of consecutive windows to classify as reps
+WindowLength: 80
+WindowStride: 40
+MinConsqWindows: 3 # Minimum number of consecutive windows to classify as reps
 
 ApiKey: patMswkrKzfHWSG3U.a882cccc6e7709b3a24b42b7f9c0ccd48ed15614f13c54e4d3dbaa55ba8ffffb
 BaseId: appaCiWbsAFmlkOLF
