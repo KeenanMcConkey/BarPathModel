@@ -29,3 +29,24 @@ Window length: 100
 Window stride: 50
 Min consecutive windows: 3
 
+2024-09-24 01:26:47.627314
+Average start error: 0.668
+Average end error: 0.762
+Window length: 80
+Window stride: 40
+Min consecutive windows: 3
+
+2024-09-24 01:32:44.428967
+Average start error: 1.144
+Average end error: 0.948
+Window length: 120
+Window stride: 60
+Min consecutive windows: 3
+
+2024-09-24 01:40:12.730060
+Average start error: 0.430
+Average end error: 0.747
+Window length: 100
+Window stride: 50
+Min consecutive windows: 5
+
