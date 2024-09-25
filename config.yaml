@@ -9,12 +9,3 @@ ApiKey: patMswkrKzfHWSG3U.a882cccc6e7709b3a24b42b7f9c0ccd48ed15614f13c54e4d3dbaa
 BaseId: appaCiWbsAFmlkOLF
 TableName: tblZtbDVHfCaoTnsH
 BaseUrl: https://api.airtable.com/v0/
-
-RepsFolder: reps
-ExercisesFolder: exercises
-ClassifierFilename: classifier.pkl
-FeaturesFilename: features.csv
-LabelsFilename: labels.csv
-
-ResultsFolder: results
-ResultsFilename: results.txt

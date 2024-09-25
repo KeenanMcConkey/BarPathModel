@@ -1,4 +1,4 @@
-def predict_exercise_times(predictions, window_length, window_stride, sample_rate, min_window_counter=3):
+def predict_exercise_indices(predictions, window_length, window_stride, min_consq_windows):
     exercise_start = None
     exercise_end = None
     window_counter = 0
@@ -11,16 +11,18 @@ def predict_exercise_times(predictions, window_length, window_stride, sample_rat
             window_counter = 0
         
         if exercise_start == None and predictions[i] == 0 and predictions[i + 1] == 1:
-            exercise_start = i * window_stride
+            if predictions[i + 1:i + min_consq_windows + 1].all():
+                exercise_start = i * window_stride
+                window_counter = 1
 
         if predictions[i] == 1 and predictions[i + 1] == 0:
-            if window_counter >= min_window_counter:
-                exercise_end = i * window_stride + window_length
-
+            if window_counter >= min_consq_windows:
+                exercise_end = i * window_stride
+    
     if exercise_start == None:
         exercise_start = 0
 
     if exercise_end == None:
         exercise_end = len(predictions) * window_stride + window_length
     
-    return float(exercise_start) / float(sample_rate), float(exercise_end) / float(sample_rate)
+    return exercise_start, exercise_end

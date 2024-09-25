@@ -1,5 +1,8 @@
+import sys
+sys.path.append("..")
+
 from preprocessing import extract_window_features, preprocess_data
-from postprocessing import predict_exercise_times
+from postprocessing import predict_exercise_indices
 from utils import load_config, load_data
 
 from os import path
@@ -18,7 +21,7 @@ def predict_times(record, config):
 
     predictions = clf.predict(window_features)
     print(f"Predictions: {predictions}")
-    start_predict, end_predict = predict_exercise_times(
+    start_predict, end_predict = predict_exercise_indices(
         predictions, config['WindowLength'], config['WindowStride'], config['SampleRate'])
     start_actual = float(record['StartRepTime'].values[0])
     end_actual = float(record['EndRepTime'].values[0])
