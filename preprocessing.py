@@ -45,11 +45,21 @@ def preprocess_data(df, cutoff_freq, sample_rate):
     df['VelY'] = df['AccY'].apply(lambda x: cumulative_trapezoid(x, dx=dx))
     df['VelZ'] = df['AccZ'].apply(lambda x: cumulative_trapezoid(x, dx=dx))
 
+    df['VelX'] = df['VelX'].apply(lambda x: filter(x))
+    df['VelY'] = df['VelY'].apply(lambda x: filter(x))
+    df['VelZ'] = df['VelZ'].apply(lambda x: filter(x))
+
     df['PosX'] = df['VelX'].apply(lambda x: cumulative_trapezoid(x, dx=dx))
     df['PosY'] = df['VelY'].apply(lambda x: cumulative_trapezoid(x, dx=dx))
     df['PosZ'] = df['VelZ'].apply(lambda x: cumulative_trapezoid(x, dx=dx))
+    
+    df['PosX'] = df['PosX'].apply(lambda x: filter(x))
+    df['PosY'] = df['PosY'].apply(lambda x: filter(x))
+    df['PosZ'] = df['PosZ'].apply(lambda x: filter(x))
 
     return df
+
+
 
 
 def extract_labels(df, label_name):
