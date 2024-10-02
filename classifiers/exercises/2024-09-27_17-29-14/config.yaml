@@ -1,9 +1,0 @@
-ApiKey: patMswkrKzfHWSG3U.a882cccc6e7709b3a24b42b7f9c0ccd48ed15614f13c54e4d3dbaa55ba8ffffb
-BaseId: appaCiWbsAFmlkOLF
-BaseUrl: https://api.airtable.com/v0/
-CutoffFreq: 0.1
-MinConsqWindows: 5
-SampleRate: 100
-TableName: tblZtbDVHfCaoTnsH
-WindowLength: 100
-WindowStride: 50

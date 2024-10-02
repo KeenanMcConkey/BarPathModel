@@ -17,14 +17,11 @@ get_ipython().run_line_magic('autoreload', '2')
 # In[2]:
 
 
-from utils import load_data, load_config, save_data
+from utils import load_airtable_data, load_config, save_data
 
 config = load_config()
-
-data = load_data()
+data = await load_airtable_data()
 save_data(data)
-
-data.head()
 
 
 # ## Train an exercise classifier
@@ -78,8 +75,8 @@ print("Classifier type: ", EXERCISE_CLASSIFIER)
 print("Training accuracy: ", exercise_classifier.score(X_train, y_train))
 print("Testing accuracy: ", exercise_classifier.score(X_test, y_test))
 
-y_pred = exercise_classifier.predict(X_test)
-report = classification_report(y_test, y_pred, zero_division=0)
+exercise_predictions = exercise_classifier.predict(X_test)
+report = classification_report(y_test, exercise_predictions, zero_division=0)
 print(report)
 
 
@@ -117,7 +114,7 @@ WINDOW_CLASSIFIER = 'Window'
 
 # ### Extract windowed features and labels
 
-# In[9]:
+# In[8]:
 
 
 from preprocessing import extract_window_features, extract_window_labels
@@ -129,7 +126,7 @@ window_labels = extract_window_labels(data, config['WindowLength'], config['Wind
 
 # ### Train model
 
-# In[10]:
+# In[9]:
 
 
 X_train, X_test, y_train, y_test = train_test_split(window_features, window_labels, test_size=0.2)
@@ -148,7 +145,7 @@ print(report)
 
 # ### Save classifier, features and labels
 
-# In[11]:
+# In[10]:
 
 
 save_classifier(window_classifier, WINDOW_CLASSIFIER, report)
@@ -158,9 +155,9 @@ save_labels(window_labels, WINDOW_CLASSIFIER)
 
 # ### Save this notebook to a script
 
-# In[12]:
+# In[11]:
 
 
 # Convert the notebook to a script
-get_ipython().system('jupyter nbconvert --to script BarPathModelTraining.ipynb --output model_training')
+get_ipython().system('jupyter nbconvert --to script BarPathModelTraining.ipynb --output train_model')
 

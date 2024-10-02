@@ -60,8 +60,6 @@ def preprocess_data(df, cutoff_freq, sample_rate):
     return df
 
 
-
-
 def extract_labels(df, label_name):
     label_encoder = LabelEncoder()
     labels = label_encoder.fit_transform(df[label_name])
@@ -73,9 +71,13 @@ def extract_features(df):
 
     for data_column in DATA_COLUMNS:
         for feature_name, feature_func in FEATURE_MAP.items():
-            feature_dict[f'{data_column}{feature_name}'] = df[data_column].apply(feature_func)
+            try:
+                feature_dict[f'{data_column}_{feature_name}'] = df[data_column].apply(feature_func)
+            except Exception as e:
+                print(f"Error processing column {data_column} with feature {feature_name}: {e}")
+                raise
 
-    return pd.concat(feature_dict, axis=1)
+    return pd.DataFrame(feature_dict)
 
 
 def extract_window_features(df, window_size, step_size):

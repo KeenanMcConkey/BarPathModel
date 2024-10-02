@@ -8,9 +8,11 @@ import pandas as pd
 from ast import literal_eval
 from pyairtable import Api as airtable_api
 from datetime import datetime
-
+from pymongo import MongoClient
 
 DEFAULT_FORMULA = f"AND({{ValidData}} = 'true', {{StartRepTime}} != '', {{EndRepTime}} != '', {{Reps}} >= '1')"
+ARRAY_COLUMNS = ['Counter', 'TimeBetweenSamples', 'HeartRate', 'AccX', 'AccY', 'AccZ', 'Pitch', 'Roll', 'Yaw']
+OTHER_COLUMNS = ['Date', 'Exercise', 'Lifter', 'WorkoutTime', 'Reps', 'Weight', 'Intensity', 'Notes', 'StartRepTime', 'EndRepTime']
 
 DATA_FOLDER = 'data'
 CLASSIFIERS_FOLDER = 'classifiers'
@@ -47,10 +49,10 @@ def save_data(data):
     data.to_csv(data_file)
 
 
-def load_data(formula=DEFAULT_FORMULA):    
+def load_airtable_data(formula=DEFAULT_FORMULA):    
     config = load_config()
-    api = airtable_api(config['ApiKey'])
-    table = api.table(config['BaseId'], config['TableName'])
+    api = airtable_api(config['Airtable']['ApiKey'])
+    table = api.table(config['Airtable']['BaseId'], config['Airtable']['TableName'])
 
     matches = table.all(formula=formula)
 
@@ -58,30 +60,23 @@ def load_data(formula=DEFAULT_FORMULA):
         return np.array(literal_eval(data))
     
     def map_data(data):
-        return {
-            'Date': data.get('Date'),
-            'Exercise': data.get('Exercise'),
-            'Lifter': data.get('Lifter'),
-            'WorkoutTime': data.get('WorkoutTime'),
-            'Reps': data.get('Reps'),
-            'Weight': data.get('Weight'),
-            'Intensity': data.get('Intensity'),
-            'Notes': data.get('Notes'),
-            'StartRepTime': data.get('StartRepTime'),
-            'EndRepTime': data.get('EndRepTime'),
-            'Counter': to_numpy(data.get('Counter')),
-            'TimeBetweenSamples': to_numpy(data.get('TimeBetweenSamples')),
-            'AccX': to_numpy(data.get('AccX')),
-            'AccY': to_numpy(data.get('AccY')),
-            'AccZ': to_numpy(data.get('AccZ')),
-            'Pitch': to_numpy(data.get('Pitch')),
-            'Roll': to_numpy(data.get('Roll')),
-            'Yaw': to_numpy(data.get('Yaw')),
-            'HeartRate': to_numpy(data.get('HeartRate')),
-        }
+        return {**{col: data.get(col) for col in OTHER_COLUMNS}, **{col: to_numpy(data.get(col)) for col in ARRAY_COLUMNS}}
     
     data = [map_data(match['fields']) for match in matches]
     return pd.DataFrame(data)
+
+
+async def load_mongo_data():
+    config = load_config()
+    client = MongoClient(config['Mongo']['Url'])
+    database = client.get_database(config['Mongo']['Database'])
+    collection = database.get_collection(config['Mongo']['Collection'])
+    data = pd.DataFrame(list(collection.find()))
+
+    for column in ARRAY_COLUMNS:
+        data[column] = data[column].apply(lambda x: np.array(x))
+
+    return data
 
 
 def save_classifier(classifier, classifier_type, classification_report=None):
@@ -89,7 +84,6 @@ def save_classifier(classifier, classifier_type, classification_report=None):
         raise ValueError(f"Invalid classifier type: {classifier_type}")
     
     classifier_folder = os.path.join(CLASSIFIERS_FOLDER, CLASSIFIER_TYPES[classifier_type])
-    # with current_date time
     classifier_folder = os.path.join(classifier_folder, datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
 
     if not os.path.exists(classifier_folder):
