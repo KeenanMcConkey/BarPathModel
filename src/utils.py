@@ -20,7 +20,7 @@ REPS_FOLDER = 'reps'
 EXERCISES_FOLDER = 'exercises'
 RESULTS_FOLDER = 'results'
 
-DATA_FILENAME = 'airtable_data.csv'
+DATA_FILENAME = 'raw_data.csv'
 CLASSIFIER_FILENAME = 'classifier.pkl'
 FEATURES_FILENAME = 'features.csv'
 LABELS_FILENAME = 'labels.csv'
@@ -34,19 +34,12 @@ CLASSIFIER_TYPES = {
 }
 
 def load_config():
-    with open("config.yaml", 'r') as stream:
+    with open(os.path.join("..", "config.yml"), 'r') as stream:
         try:
             config = yaml.safe_load(stream)
         except yaml.YAMLError as exc:
             print(exc)
     return config
-
-def save_data(data):
-    if not os.path.exists(DATA_FOLDER):
-        os.makedirs(DATA_FOLDER)
-    
-    data_file = os.path.join(DATA_FOLDER, DATA_FILENAME)
-    data.to_csv(data_file)
 
 
 def load_airtable_data(formula=DEFAULT_FORMULA):    
@@ -66,7 +59,7 @@ def load_airtable_data(formula=DEFAULT_FORMULA):
     return pd.DataFrame(data)
 
 
-async def load_mongo_data():
+def load_mongo_data():
     config = load_config()
     client = MongoClient(config['Mongo']['Url'])
     database = client.get_database(config['Mongo']['Database'])
@@ -79,11 +72,37 @@ async def load_mongo_data():
     return data
 
 
+def load_classifier(classifier_type):
+    if classifier_type not in CLASSIFIER_TYPES:
+        raise ValueError(f"Invalid classifier type: {classifier_type}")
+    
+    classifier_name = CLASSIFIER_TYPES[classifier_type]
+    classifier_folder = os.path.join('..', CLASSIFIERS_FOLDER, classifier_name)
+    classifier_folder = os.path.join(classifier_folder, os.listdir(classifier_folder)[-1])
+
+    classifier_file = os.path.join(classifier_folder, CLASSIFIER_FILENAME)
+
+    with open(classifier_file, 'rb') as f:
+        classifier = pkl.load(f)
+    
+    return classifier
+
+
+def save_data(data):
+    data_folder = os.path.join('..', DATA_FOLDER)
+    if not os.path.exists(data_folder):
+        os.makedirs(data_folder)
+    
+
+    data_file = os.path.join(data_folder, DATA_FILENAME)
+    data.to_csv(data_file)
+
+
 def save_classifier(classifier, classifier_type, classification_report=None):
     if classifier_type not in CLASSIFIER_TYPES:
         raise ValueError(f"Invalid classifier type: {classifier_type}")
     
-    classifier_folder = os.path.join(CLASSIFIERS_FOLDER, CLASSIFIER_TYPES[classifier_type])
+    classifier_folder = os.path.join('..', CLASSIFIERS_FOLDER, CLASSIFIER_TYPES[classifier_type])
     classifier_folder = os.path.join(classifier_folder, datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
 
     if not os.path.exists(classifier_folder):
@@ -109,28 +128,12 @@ def save_classifier(classifier, classifier_type, classification_report=None):
         f.write(classification_report)
 
 
-def load_classifier(classifier_type):
-    if classifier_type not in CLASSIFIER_TYPES:
-        raise ValueError(f"Invalid classifier type: {classifier_type}")
-    
-    classifier_name = CLASSIFIER_TYPES[classifier_type]
-    classifier_folder = os.path.join(CLASSIFIERS_FOLDER, classifier_name)
-    classifier_folder = os.path.join(classifier_folder, os.listdir(classifier_folder)[-1])
-
-    classifier_file = os.path.join(classifier_folder, CLASSIFIER_FILENAME)
-
-    with open(classifier_file, 'rb') as f:
-        classifier = pkl.load(f)
-    
-    return classifier
-
-
 def save_features(features, classifier_type):
     if classifier_type not in CLASSIFIER_TYPES:
         raise ValueError(f"Invalid classifier type: {classifier_type}")
     
     classifier_name = CLASSIFIER_TYPES[classifier_type]
-    features_folder = os.path.join(DATA_FOLDER, classifier_name)
+    features_folder = os.path.join('..', DATA_FOLDER, classifier_name)
 
     if not os.path.exists(features_folder):
         os.makedirs(features_folder)
@@ -145,7 +148,7 @@ def save_labels(labels, classifier_type):
         raise ValueError(f"Invalid classifier type: {classifier_type}")
     
     classifier_name = CLASSIFIER_TYPES[classifier_type]
-    labels_folder = os.path.join(DATA_FOLDER, classifier_name)
+    labels_folder = os.path.join('..', DATA_FOLDER, classifier_name)
 
     if not os.path.exists(labels_folder):
         os.makedirs(labels_folder)

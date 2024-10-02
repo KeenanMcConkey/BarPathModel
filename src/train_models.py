@@ -20,7 +20,7 @@ get_ipython().run_line_magic('autoreload', '2')
 from utils import load_airtable_data, load_config, save_data
 
 config = load_config()
-data = await load_airtable_data()
+data = load_airtable_data()
 save_data(data)
 
 
@@ -155,9 +155,9 @@ save_labels(window_labels, WINDOW_CLASSIFIER)
 
 # ### Save this notebook to a script
 
-# In[11]:
+# In[1]:
 
 
 # Convert the notebook to a script
-get_ipython().system('jupyter nbconvert --to script BarPathModelTraining.ipynb --output train_model')
+get_ipython().system('jupyter nbconvert --to script BarPathModelTraining.ipynb --output train_models')
 
