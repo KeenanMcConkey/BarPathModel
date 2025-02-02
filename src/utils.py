@@ -69,8 +69,10 @@ def load_mongo_data():
     for column in ARRAY_COLUMNS:
         data[column] = data[column].apply(lambda x: np.array(x))
 
-    return data
+    # Filter out rows where 'startreptime' is blank
+    data = data[data['StartRepTime'].notna() & (data['StartRepTime'] != '')]
 
+    return data
 
 def load_classifier(classifier_type):
     if classifier_type not in CLASSIFIER_TYPES:
