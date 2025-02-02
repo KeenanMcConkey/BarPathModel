@@ -164,3 +164,4 @@ results/
 
 # Deployment
 .deployed
+packages/model/hello/hello.py
