@@ -29,33 +29,36 @@ FEATURE_MAP = {
 }
 
 
+def butter_filter(data, cutoff, sample_rate, order=2, btype='highpass'):
+    b, a = butter(order, 2 * cutoff / sample_rate, btype=btype)
+    return filtfilt(b, a, data)
+
 def preprocess_data(df, cutoff_freq, sample_rate):
-    
-    def filter(data):
-        b, a = butter(1, 2 * cutoff_freq / (sample_rate), btype="highpass")
-        return filtfilt(b, a, data)
-    
-    dx = 1/sample_rate
+    dx = 1 / sample_rate
 
-    df['AccX'] = df['AccX'].apply(lambda x: filter(x))
-    df['AccY'] = df['AccY'].apply(lambda x: filter(x))
-    df['AccZ'] = df['AccZ'].apply(lambda x: filter(x))
+    # Filter raw acceleration
+    for axis in ['X', 'Y', 'Z']:
+        df[f'Acc{axis}'] = df[f'Acc{axis}'].apply(
+            lambda x: butter_filter(x, cutoff=cutoff_freq, sample_rate=sample_rate, order=1)
+        )
 
-    df['VelX'] = df['AccX'].apply(lambda x: cumulative_trapezoid(x, dx=dx))
-    df['VelY'] = df['AccY'].apply(lambda x: cumulative_trapezoid(x, dx=dx))
-    df['VelZ'] = df['AccZ'].apply(lambda x: cumulative_trapezoid(x, dx=dx))
+    # Integrate to velocity, then filter again (higher cutoff to reduce drift)
+    for axis in ['X', 'Y', 'Z']:
+        df[f'Vel{axis}'] = df[f'Acc{axis}'].apply(
+            lambda x: np.concatenate([[0], cumulative_trapezoid(x, dx=dx)])
+        )
+        df[f'Vel{axis}'] = df[f'Vel{axis}'].apply(
+            lambda x: butter_filter(x, cutoff=(cutoff_freq * 3), sample_rate=sample_rate, order=2)
+        )
 
-    df['VelX'] = df['VelX'].apply(lambda x: filter(x))
-    df['VelY'] = df['VelY'].apply(lambda x: filter(x))
-    df['VelZ'] = df['VelZ'].apply(lambda x: filter(x))
-
-    df['PosX'] = df['VelX'].apply(lambda x: cumulative_trapezoid(x, dx=dx))
-    df['PosY'] = df['VelY'].apply(lambda x: cumulative_trapezoid(x, dx=dx))
-    df['PosZ'] = df['VelZ'].apply(lambda x: cumulative_trapezoid(x, dx=dx))
-    
-    df['PosX'] = df['PosX'].apply(lambda x: filter(x))
-    df['PosY'] = df['PosY'].apply(lambda x: filter(x))
-    df['PosZ'] = df['PosZ'].apply(lambda x: filter(x))
+    # Integrate to position, then filter again (even higher cutoff to suppress drift)
+    for axis in ['X', 'Y', 'Z']:
+        df[f'Pos{axis}'] = df[f'Vel{axis}'].apply(
+            lambda x: np.concatenate([[0], cumulative_trapezoid(x, dx=dx)])
+        )
+        df[f'Pos{axis}'] = df[f'Pos{axis}'].apply(
+            lambda x: butter_filter(x, cutoff=(cutoff_freq * 5), sample_rate=sample_rate, order=2)
+        )
 
     return df
 

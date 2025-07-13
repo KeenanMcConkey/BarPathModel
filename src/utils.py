@@ -72,6 +72,8 @@ def load_mongo_data():
     # Filter out rows where 'startreptime' is blank
     data = data[data['StartRepTime'].notna() & (data['StartRepTime'] != '')]
 
+
+    
     return data
 
 def load_classifier(classifier_type):
