@@ -5,13 +5,3 @@ WindowLength: 100
 WindowStride: 50
 MinConsqWindows: 2 # Minimum number of consecutive windows to classify as reps
 
-Airtable:
-  ApiKey: patMswkrKzfHWSG3U.a882cccc6e7709b3a24b42b7f9c0ccd48ed15614f13c54e4d3dbaa55ba8ffffb
-  BaseId: appaCiWbsAFmlkOLF
-  TableName: tblZtbDVHfCaoTnsH
-  BaseUrl: https://api.airtable.com/v0/
-
-Mongo:
-  Url: mongodb+srv://doadmin:hj32EAcU87sv0961@db-mongodb-nyc3-96096-a80ce1b7.mongo.ondigitalocean.com/admin?retryWrites=true&w=majority&tls=true&tlsInsecure=true
-  Database: mydatabase
-  Collection: exercise_sets
