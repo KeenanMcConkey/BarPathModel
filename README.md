@@ -2,8 +2,8 @@
 
 ## Training
 
-See BarPathModelTraining Jupyter notebook
+See [Training Notebook](src/BarPathModelTraining.ipynb)
 
 ## Testing
 
-See BarPathModelTesting Jupyter notebook
+See [Testing Notebook](src/BarPathModelTesting.ipynb)
