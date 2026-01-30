@@ -1,3 +1,9 @@
 # BarPathModel
 
-Model training for weight bar tracking
+## Training
+
+See BarPathModelTraining Jupyter notebook
+
+## Testing
+
+See BarPathModelTesting Jupyter notebook
